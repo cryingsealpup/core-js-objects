@@ -32,8 +32,25 @@ function shallowCopy(/* obj */) {
  *    mergeObjects([{a: 1, b: 2}, {b: 3, c: 5}]) => {a: 1, b: 5, c: 5}
  *    mergeObjects([]) => {}
  */
-function mergeObjects(/* objects */) {
-  throw new Error('Not implemented');
+function mergeObjects(objects) {
+  if (objects.length === 0) {
+    return {};
+  }
+  if (objects.length === 1) {
+    return objects[0];
+  }
+  const [obj1, obj2] = [...objects];
+  Object.entries(obj1).forEach(([key, value]) => {
+    if (Object.keys(obj2).includes(key)) {
+      obj1[key] = value + obj2[key];
+    }
+  });
+  Object.entries(obj2).forEach(([key, value]) => {
+    if (!Object.keys(obj1).includes(key)) {
+      obj1[key] = value;
+    }
+  });
+  return obj1;
 }
 
 /**
@@ -49,8 +66,12 @@ function mergeObjects(/* objects */) {
  *    removeProperties({name: 'John', age: 30, city: 'New York'}, 'age') => {name: 'John', city: 'New York'}
  *
  */
-function removeProperties(/* obj, keys */) {
-  throw new Error('Not implemented');
+function removeProperties(obj, keys) {
+  const newObj = { ...obj };
+  keys.forEach((key) => {
+    delete newObj[key];
+  });
+  return newObj;
 }
 
 /**
@@ -225,8 +246,15 @@ function fromJSON(proto, json) {
  *      { country: 'Russia',  city: 'Saint Petersburg' }
  *    ]
  */
-function sortCitiesArray(/* arr */) {
-  throw new Error('Not implemented');
+function sortCitiesArray(arr) {
+  const sorted = arr.sort((a, b) => {
+    if (a.country !== b.country) {
+      return a.country.localeCompare(b.country);
+    }
+    return a.city.localeCompare(b.city);
+  });
+
+  return sorted;
 }
 
 /**
@@ -259,8 +287,17 @@ function sortCitiesArray(/* arr */) {
  *    "Poland" => ["Lodz"]
  *   }
  */
-function group(/* array, keySelector, valueSelector */) {
-  throw new Error('Not implemented');
+function group(array, keySelector, valueSelector) {
+  const multimap = {};
+  array.forEach((el) => {
+    if (keySelector(el) in multimap) {
+      multimap[keySelector(el)].push(valueSelector(el));
+    } else {
+      multimap[keySelector(el)] = [valueSelector(el)];
+    }
+  });
+
+  return new Map(Object.entries(multimap));
 }
 
 /**
